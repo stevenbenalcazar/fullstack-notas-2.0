@@ -4,7 +4,8 @@
   "description": "CRUD de notas",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "heroku-cleanup": "echo This runs after Heroku prunes and caches dependencies."
   },
   "author": "Jorge Pérez",
   "license": "MIT",
