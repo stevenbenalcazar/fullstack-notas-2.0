@@ -1,0 +1,66 @@
+name: notas
+
+on:
+    push:
+      branches: [main]
+    pull_request:
+      branches: [main]
+      types: [opened, synchronize]
+  
+jobs:
+  
+    avoid_reduncy:
+      runs-on: ubuntu-latest
+      steps:
+        - name: Cancel Previous Redundant Builds
+          uses: styfle/cancel-workflow-action@0.9.1
+          with:
+            access_token: ${{ github.token }}
+  
+    lint:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - uses: actions/setup-node@v2
+          with:
+            cache: 'npm'
+            node-version: '20.12.2'
+        - name: Install dependencies
+          run: npm i
+  
+    build:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v2
+          with:
+            fetch-depth: 0
+        - uses: actions/setup-node@v2
+          with:
+            cache: 'npm'
+            node-version: '20.12.2'
+        - name: Install dependencies
+          run: npm i
+        - name: Build
+          run: npm run build
+        - uses: actions/upload-artifact@v2
+          with:
+            name: dist
+            path: dist
+
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Deploy to Heroku
+        if: ${{ github.event_name == 'push' }}
+        uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: HRKU-3e5b5d48-e5c9-4e8e-b564-97d453a19a99
+          heroku_app_name: citest
+          heroku_email: clobodiaz@outlook.com
+          healthcheck: "https://citest-c05b3021aac5.herokuapp.com/"
+          rollbackonhealthcheckfailed: true
