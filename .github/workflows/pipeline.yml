@@ -1,66 +1,17 @@
-name: notas
+name: Deploy
 
 on:
-    push:
-      branches: [main]
-    pull_request:
-      branches: [main]
-      types: [opened, synchronize]
-  
-jobs:
-  
-    avoid_reduncy:
-      runs-on: ubuntu-latest
-      steps:
-        - name: Cancel Previous Redundant Builds
-          uses: styfle/cancel-workflow-action@0.9.1
-          with:
-            access_token: ${{ github.token }}
-  
-    lint:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-          with:
-            fetch-depth: 0
-        - uses: actions/setup-node@v2
-          with:
-            cache: 'npm'
-            node-version: '20.12.2'
-        - name: Install dependencies
-          run: npm i
-  
-    build:
-      runs-on: ubuntu-latest
-      steps:
-        - uses: actions/checkout@v2
-          with:
-            fetch-depth: 0
-        - uses: actions/setup-node@v2
-          with:
-            cache: 'npm'
-            node-version: '20.12.2'
-        - name: Install dependencies
-          run: npm i
-        - name: Build
-          run: npm run build
-        - uses: actions/upload-artifact@v2
-          with:
-            name: dist
-            path: dist
+  push:
+    branches:
+      - e309637
 
-  deploy:
+jobs:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.13.15 # This is the action
         with:
-          fetch-depth: 0
-      - name: Deploy to Heroku
-        if: ${{ github.event_name == 'push' }}
-        uses: akhileshns/heroku-deploy@v3.12.12
-        with:
-          heroku_api_key: HRKU-3e5b5d48-e5c9-4e8e-b564-97d453a19a99
-          heroku_app_name: citest
-          heroku_email: clobodiaz@outlook.com
-          healthcheck: "https://citest-c05b3021aac5.herokuapp.com/"
-          rollbackonhealthcheckfailed: true
+          heroku_api_key: HRKU-dfd6524c-b425-45d5-8013-b6bef814c64e
+          heroku_app_name: notas-2 #Must be unique in Heroku
+          heroku_email: sabenalcazarm@uce.edu.ec
